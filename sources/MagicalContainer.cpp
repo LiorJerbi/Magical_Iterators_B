@@ -19,26 +19,23 @@ void MagicalContainer::addElement(int num) {
     else {
         bool inserted = false;
         for (auto itr = _asc_cont.begin(); itr != _asc_cont.end(); ++itr) {
-            if (**itr > *ptr) { // number is smaller than the value in place
-                if(itr==_asc_cont.begin()){
-                    int* tmp = _asc_cont.back();
-                    _asc_cont.pop_back();
-                    _asc_cont.emplace_back(ptr);
-                    _asc_cont.emplace_back(tmp);
-                    inserted = true;
-                    break;
-                }
-                else{
-                    _asc_cont.emplace(itr, ptr);
-                    inserted = true;
-                    break;
-                }
+            if (*ptr < 0 && (**itr >= 0 || *ptr < **itr)) {
+                _asc_cont.emplace(itr, ptr);
+                inserted = true;
+                break;
+            }
+            else if (*ptr >= 0 && **itr > *ptr) {
+                _asc_cont.emplace(itr, ptr);
+                inserted = true;
+                break;
             }
         }
         if (!inserted) {
             _asc_cont.emplace_back(ptr);
         }
     }
+
+
 
 
     //sidecross add.

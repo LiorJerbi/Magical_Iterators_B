@@ -36,7 +36,13 @@ namespace ariel {
                 AscendingIterator(MagicalContainer& container);
                 ~AscendingIterator() = default;
                 AscendingIterator(AscendingIterator&& other) = default;
-                AscendingIterator& operator=(AscendingIterator&& other) = delete;
+                AscendingIterator& operator=(AscendingIterator& other){
+                    if (&_container != &(other._container)) {
+                        throw std::runtime_error("Cannot assign iterators from different containers.");
+                    }
+                    _current_index = other._current_index;
+                    return *this;
+                }
 
                 void setIndex(int idx);
                 AscendingIterator& operator=(const AscendingIterator& other) {
@@ -94,7 +100,13 @@ namespace ariel {
                 SideCrossIterator(MagicalContainer& container);
                 ~SideCrossIterator() = default;
                 SideCrossIterator(SideCrossIterator&& other) = default;
-                SideCrossIterator& operator=(SideCrossIterator&& other) = delete;
+                SideCrossIterator& operator=(SideCrossIterator& other){
+                    if (&_container != &(other._container)) {
+                        throw std::runtime_error("Cannot assign iterators from different containers.");
+                    }
+                    _current_index = other._current_index;
+                    return *this;
+                }
 
                 void setIndex(int idx){_current_index = idx;}
                 SideCrossIterator& operator=(const SideCrossIterator& other) {
@@ -151,7 +163,13 @@ namespace ariel {
                 PrimeIterator(MagicalContainer& container);
                 ~PrimeIterator() = default;
                 PrimeIterator(PrimeIterator&& other) = default;
-                PrimeIterator& operator=(PrimeIterator&& other) = delete;
+                PrimeIterator& operator=(PrimeIterator& other){
+                    if (&_container != &(other._container)) {
+                        throw std::runtime_error("Cannot assign iterators from different containers.");
+                    }
+                    _current_index = other._current_index;
+                    return *this;
+                }
 
                 void setIndex(int idx){_current_index = idx;}
                 PrimeIterator& operator=(const PrimeIterator& other) {
