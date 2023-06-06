@@ -2,110 +2,28 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 using namespace ariel;
 using namespace std;
 
 MagicalContainer::MagicalContainer():_container(),_size(0){}
 void MagicalContainer::addElement(int num) {
-    _container.emplace_back(num);
+    _container.push_back(num);
     _size++;
-    int* ptr = new int(_container.back());
-    //ascending container add.
-    if(_asc_cont.empty()){      //no pointers in vector
-        _asc_cont.emplace_back(ptr);
-        auto tst = _asc_cont.begin();        
-    }
-    else {
-        bool inserted = false;
-        for (auto itr = _asc_cont.begin(); itr != _asc_cont.end(); ++itr) {
-            if (*ptr < 0 && (**itr >= 0 || *ptr < **itr)) {
-                _asc_cont.emplace(itr, ptr);
-                inserted = true;
-                break;
-            }
-            else if (*ptr >= 0 && **itr > *ptr) {
-                _asc_cont.emplace(itr, ptr);
-                inserted = true;
-                break;
+    sort(_container.begin(),_container.end());      //sort the element in ascending order.
+
+        _prm_cont.clear();
+        for(auto itr = _container.begin() ; itr!=_container.end();++itr){
+            if(isPrime(*itr)){
+                int *sol = &(*itr);
+                _prm_cont.push_back(sol);
             }
         }
-        if (!inserted) {
-            _asc_cont.emplace_back(ptr);
-        }
-    }
-
-
-
-
-    //sidecross add.
-    if(_sicr_cont.empty()){     // no pointers in the vector
-        _sicr_cont.emplace_back(ptr);
-    }
-    else{
-        _sicr_cont.clear();
-
-        vector<int*>::const_iterator begin=_asc_cont.cbegin();
-        vector<int*>::const_reverse_iterator end=_asc_cont.crbegin();
-        int i = _asc_cont.size()/2;
-        for(;i<_asc_cont.size() && *begin != *end; ++begin,++end,++i){    //take first and last pointers from ascending vector and push them one after one.(O(n) at max)
-            _sicr_cont.emplace_back(*begin);
-            _sicr_cont.emplace_back(*end);
-        }
-        if(_asc_cont.size() > _sicr_cont.size())    //if size is odd we missed the last number need to add it.
-            _sicr_cont.emplace_back(*begin);   
-    }
-
-    //prime add.
-    if(isPrime(num)){
-        if(_prm_cont.empty()){      //no pointers in the vector
-            _prm_cont.emplace_back(ptr);
-        }
-        else{
-            bool inserted = false;
-            for(vector<int*>::const_iterator itr=_prm_cont.cbegin(); itr !=_prm_cont.cend();++itr){   //putting the pointer in the right place.(maximum o(n))
-                if(**itr>*ptr){
-                    if(itr==_prm_cont.begin()){
-                      int* tmp= _prm_cont.back();
-                    _prm_cont.pop_back();
-                    _prm_cont.emplace_back(ptr);
-                    _prm_cont.emplace_back(tmp);
-                    inserted=true;
-                    break;
-                    }
-                    _prm_cont.emplace(itr,ptr);
-                    inserted =true;
-                    break;
-                }
-            }
-            if(!inserted){
-                _prm_cont.emplace_back(ptr);
-            }
-        }
-    }
-    
 }
 
 void MagicalContainer::removeElement(int num) {
-    bool exist = false;
-    for(auto itr=_asc_cont.begin();itr != _asc_cont.end(); ++itr){
-        if(**itr == num){
-            _asc_cont.erase(itr);
-            break;
-        }
-    }
-    for(auto itr=_sicr_cont.begin();itr != _sicr_cont.end(); ++itr){
-        if(**itr == num){
-            _sicr_cont.erase(itr);
-            break;
-        }
-    }
-    for(auto itr=_prm_cont.begin();itr != _prm_cont.end(); ++itr){
-        if(**itr == num){
-            _prm_cont.erase(itr);
-            break;
-        }
-    }    
+    bool exist = false;    
     for (auto it = _container.begin(); it != _container.end(); ++it) {
         if (*it == num) {
             _container.erase(it);
@@ -123,23 +41,19 @@ int MagicalContainer::size() const{
 std::vector<int>& MagicalContainer::getContainer(){
     return _container;
 }
-
+//AscendingIterator Constructors
 MagicalContainer::AscendingIterator::AscendingIterator(const AscendingIterator& other) : _container(other._container), _current_index(other._current_index) {}
 MagicalContainer::AscendingIterator::AscendingIterator(MagicalContainer& container) : _container(container), _current_index(0) {}
-void MagicalContainer::AscendingIterator::setIndex(int idx){
-    if(idx>this->_container.size()) throw invalid_argument("Index not in range.");
-    this->_current_index = idx;
-}
 
+//SideCrossIterator Constructors
+MagicalContainer::SideCrossIterator::SideCrossIterator(const SideCrossIterator& other) : _container(other._container), _current_index(other._current_index),counter(other.counter) {}
+MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer& container) : _container(container), _current_index(0),counter(0) {}
 
-MagicalContainer::SideCrossIterator::SideCrossIterator(const SideCrossIterator& other) : _container(other._container), _current_index(other._current_index) {}
-MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer& container) : _container(container), _current_index(0) {}
-// MagicalContainer::SideCrossIterator::~SideCrossIterator(){}
+//PrimeIterator Constructors
 MagicalContainer::PrimeIterator::PrimeIterator(const PrimeIterator& other) : _container(other._container), _current_index(other._current_index) {}
 MagicalContainer::PrimeIterator::PrimeIterator(MagicalContainer& container) : _container(container), _current_index(0) {}
-// MagicalContainer::PrimeIterator::~PrimeIterator(){}
 
-bool ariel::isPrime(const int num){
+bool ariel::isPrime(int num){
     if(num<2) return false;
     if(num == 2||num==3) return true;
     for(int i=2;i<=sqrt(num);++i){
