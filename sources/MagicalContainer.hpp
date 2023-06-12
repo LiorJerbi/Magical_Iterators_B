@@ -17,26 +17,31 @@ namespace ariel {
         MagicalContainer& operator=(MagicalContainer&& other) = delete;
     public:
         MagicalContainer();
-        ~MagicalContainer(){
-            _prm_cont.clear();
-        }
+        ~MagicalContainer();
 
         void addElement(int num);
         void removeElement(int num);
-        int size() const;
-        std::vector<int>& getContainer();
+        int size() const{return _size;}
+        std::vector<int>& getContainer(){return _container;}
     
         class AscendingIterator {
             private:
                 MagicalContainer& _container;
                 int _current_index;
+
                 AscendingIterator& operator=(AscendingIterator&& other) = delete;
 
             public:
+                //Constructors & Destructor
                 AscendingIterator(const AscendingIterator& other);
                 AscendingIterator(MagicalContainer& container);
                 ~AscendingIterator() = default;
                 AscendingIterator(AscendingIterator&& other) = default;
+
+                void setIndex(int idx);
+
+                //Operators
+
                 AscendingIterator& operator=(const AscendingIterator& other){
                     if (&_container != &(other._container)) {
                         throw std::runtime_error("Cannot assign iterators from different containers.");
@@ -44,12 +49,6 @@ namespace ariel {
                     _current_index = other._current_index;
                     return *this;
                 }
-
-                void setIndex(int idx){
-                    if(idx>this->_container.size()) {throw std::invalid_argument("Index not in range.");}
-                    this->_current_index = idx;
-                }
-
                 bool operator==(const AscendingIterator& other) const {
                     return _current_index == other._current_index;
                 }
@@ -92,13 +91,19 @@ namespace ariel {
             private:
                 MagicalContainer& _container;
                 int _current_index,counter;
+                
                 SideCrossIterator& operator=(SideCrossIterator&& other) = delete;
 
             public:
+                //Constructors & Destructor
                 SideCrossIterator(const SideCrossIterator& other);
                 SideCrossIterator(MagicalContainer& container);
                 ~SideCrossIterator() = default;
                 SideCrossIterator(SideCrossIterator&& other) = default;
+
+                void setIndex(int idx);
+
+                //Operators
                 SideCrossIterator& operator=(const SideCrossIterator& other){
                     if (&_container != &(other._container)) {
                         throw std::runtime_error("Cannot assign iterators from different containers.");
@@ -107,12 +112,6 @@ namespace ariel {
                     counter=other.counter;
                     return *this;
                 }
-
-                void setIndex(int idx){
-                    if(idx>this->_container.size()) {throw std::invalid_argument("Index not in range.");}
-                    this->_current_index = idx;
-                }
-
                 bool operator==(const SideCrossIterator& other) const {
                     return  (counter == other.counter);
                 }
@@ -153,7 +152,6 @@ namespace ariel {
 
                 SideCrossIterator end() {
                     SideCrossIterator ite(*this);
-                    // ite._current_index = ite._container._container.size();
                     ite.counter = ite._container.size();
                     return ite;
                 }
@@ -163,13 +161,19 @@ namespace ariel {
             private:
                 MagicalContainer& _container;
                 int _current_index;
+
                 PrimeIterator& operator=(PrimeIterator&& other) = delete;
 
             public:
+                //Constructors & Destructor
                 PrimeIterator(const PrimeIterator& other);
                 PrimeIterator(MagicalContainer& container);
                 ~PrimeIterator() = default;
                 PrimeIterator(PrimeIterator&& other) = default;
+
+                void setIndex(int idx);
+
+                //Operators.
                 PrimeIterator& operator=(const PrimeIterator& other){
                     if (&_container != &(other._container)) {
                         throw std::runtime_error("Cannot assign iterators from different containers.");
@@ -177,12 +181,6 @@ namespace ariel {
                     _current_index = other._current_index;
                     return *this;
                 }
-
-                void setIndex(int idx){
-                    if(idx>this->_container.size()) {throw std::invalid_argument("Index not in range.");}
-                    this->_current_index = idx;
-                }
-
 
                 bool operator==(const PrimeIterator& other) const {
                     return _current_index == other._current_index;
